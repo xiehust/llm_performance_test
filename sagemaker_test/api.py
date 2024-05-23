@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 import uvicorn, json, datetime
-import torch
+# import torch
+import boto3
 import os
 from transformers import AutoTokenizer
 import sagemaker
@@ -36,7 +37,6 @@ async def create_item(request: Request):
         "outputs": output,
         "status": 200
     }
-    torch_gc()
     return answer
 
 
@@ -68,10 +68,10 @@ def load_model():
 
     MODEL_DIR = "Qwen/Qwen1.5-72B-Chat-AWQ"
     endpoint_name = 'lmi-model-qwen1-5-72B-2024-05-23-09-10-23-101'
-    role = sagemaker.get_execution_role()  # execution role for the endpoint
-    sess = sagemaker.session.Session()  # sagemaker session for interacting with different AWS APIs
-    region = sess._region_name  # region name of the current SageMaker Studio environment
-    account_id = sess.account_id()  # account_id of the current SageMaker Studio environment
+    # role = sagemaker.get_execution_role()  # execution role for the endpoint
+    sess = sagemaker.session.Session(boto3.session.Session())  # sagemaker session for interacting with different AWS APIs
+    # region = sess._region_name  # region name of the current SageMaker Studio environment
+    # account_id = sess.account_id()  # account_id of the current SageMaker Studio environment
 
     
     tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, use_fast=False)
