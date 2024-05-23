@@ -23,7 +23,7 @@ app = FastAPI()
 def ping():
     return {'status': 'Healthy'}
 
-@app.post("/invocations")
+@app.post("/generate")
 async def create_item(request: Request):
     global tokenizer,model,terminators
     json_post_raw = await request.json()
@@ -67,11 +67,12 @@ def load_model():
     global tokenizer,model,terminators
     model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
 
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id,token='')
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         torch_dtype=torch.bfloat16,
         device_map="auto",
+        token=''
     )
     messages = [
         {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
