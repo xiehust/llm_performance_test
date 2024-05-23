@@ -47,6 +47,7 @@ def chat(messages,max_new_tokens,temperature):
         tokenize=False,
         add_generation_prompt=True
     )
+    print(f'input tokens:{len(inputs)}')
     parameters = {
             "max_new_tokens":max_new_tokens, 
             "do_sample": True,
