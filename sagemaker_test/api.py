@@ -6,6 +6,7 @@ import os
 from transformers import AutoTokenizer
 import sagemaker
 from sagemaker import Model, image_uris, serializers, deserializers
+import argparse
 
 DEVICE = "cuda"
 DEVICE_ID = "0"
@@ -23,6 +24,8 @@ def ping():
 @app.post("/generate")
 async def create_item(request: Request):
     global tokenizer
+    if not tokenizer:
+        load_model()
     json_post_raw = await request.json()
     json_post = json.dumps(json_post_raw)
     print('json_post:',json_post)
@@ -85,6 +88,15 @@ def load_model():
     
     
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description="Chat RESTful API server."
+    )
+    parser.add_argument("--host", type=str, default="0.0.0.0", help="host name")
+    parser.add_argument("--port", type=int, default=8080, help="port number")
+    parser.add_argument("--workers", type=int, default=10, help="current workers")
+    
+    args = parser.parse_args()
+    
     load_model()
     print('model initialized')
-    uvicorn.run(app, host='0.0.0.0', port=8080, workers=1)
+    uvicorn.run("api:app", host=args.host, port=args.port,workers=args.workers)
